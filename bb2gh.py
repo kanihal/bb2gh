@@ -68,7 +68,6 @@ def com_exec(command):
     if rc != 0:
         sys.exit()
 
-
 # main
 print("--- bitbucket repositories ---")
 bbrepos = get_bb_repos()
@@ -76,21 +75,23 @@ print(str(len(bbrepos)) + " repos found.")
 for k, v in bbrepos.items():
     print(k + ": " + v)
 
-print("--- github repositories ---")
+print("\n\n--- github repositories ---")
 ghrepos = get_gh_repos()
 print(str(len(ghrepos)) + " repos found.")
 for k, v in ghrepos.items():
     print(k + ": " + v)
 
-print("--- repositories for migration ---")
+print("\n\n --- repositories for migration ---")
 mig_repo_names = bbrepos.keys() - ghrepos.keys()
 # mig_repo_names = {"chatapp"}  # TEST repo
 print(mig_repo_names)
 
-print("--- start migration ---")
+print("\n\n--- start migration ---")
+i=1
 for name in mig_repo_names:
     bburl = bbrepos[name]
     ghurl = create_gh_repo(name).ssh_url
+    print("* cloning "+str(i)+"/"+ str(len(mig_repo_names))+" -> " + bburl+" to "+ ghurl)
     time.sleep(random.randint(100, 200))
     com_exec("git clone --mirror " + bburl)
     com_exec("cd " + name.lower() + ".git;" +
@@ -98,4 +99,7 @@ for name in mig_repo_names:
     com_exec("cd " + name.lower() + ".git;" +
              "git push --mirror")
     com_exec("rm -rf " + name.lower() + ".git")
+    i=i+1
+    print("--------------------------------------------------------------------")
+    print("- sleep for random time")
     time.sleep(random.randint(100, 200))
